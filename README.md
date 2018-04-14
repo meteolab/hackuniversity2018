@@ -1,3 +1,5 @@
 # hackuniversity2018
 
-Aerosol Project
+AQ Monitor
+
+Air Quality Monitor Project
