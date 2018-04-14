@@ -1,6 +1,23 @@
+#include "SoftwareSerial.h"
 #include "PMS.h"
 
-PMS pms(Serial);
+/* Plantower PMS7003 Datasheet
+ * https://www.pdf-archive.com/2017/04/12/plantower-pms-7003-sensor-data-sheet/plantower-pms-7003-sensor-data-sheet.pdf
+ * Library
+ * https://github.com/fu-hsi/pms
+ * 
+ * Some
+ * https://learn.adafruit.com/pm25-air-quality-sensor/arduino-code
+ */
+
+/* Connection PMS7003 -> ESP8266:
+ *  TX  (9) -> D4 (2)
+ *  VCC (1) -> 5V
+ *  GND (3) -> GND
+ */
+ 
+SoftwareSerial PMS7003(2, 3);
+PMS pms(PMS7003);
 PMS::DATA data;
 
 int pinLED = 5; // D1
