@@ -38,8 +38,9 @@ var coords = [{ lat:59.9655, lng:30.3700},
 
 coords.forEach(function (value, index) {
   var ind = 'Value:' + index;
+  var colors = ["#600000","#a10000","#ff0000","#ff9d00","#efff00","#00ff1e"];
   var svgMarkup = '<svg width="64" height="24" xmlns="http://www.w3.org/2000/svg">' +
-    '<rect stroke="white" fill="red" x="1" y="1" width="62" height="22" />' +
+    '<rect stroke="white" fill="' + colors[5] + '" x="1" y="1" width="62" height="22" />' +
     '<text x="5" y="18" font-size="12pt" font-family="Arial" font-weight="bold" ' +
     'text-anchor="left" fill="white">' + ind + '</text></svg>';
   var myIcon = new H.map.Icon(svgMarkup),
