@@ -35,12 +35,19 @@ var coords = [{ lat:59.9655, lng:30.3700},
   { lat: 59.9288, lng: 30.3467 },
   { lat:59.9670, lng: 30.3333}];
 
+var punk = prompt('Уровень загрязнения: ', 33);
 
 coords.forEach(function (value, index) {
-  var ind = 'Value:' + index;
+  var ind = 'Val:' + punk;
   var colors = ["#600000","#a10000","#ff0000","#ff9d00","#efff00","#00ff1e"];
+  var marker_color = (punk < 55) ? colors[5] :
+    (punk < 155) ? colors[4] :
+    (punk < 255) ? colors[3] :
+    (punk < 355) ? colors[2] :
+    (punk < 425) ? colors[1] :
+    colors[0];
   var svgMarkup = '<svg width="64" height="24" xmlns="http://www.w3.org/2000/svg">' +
-    '<rect stroke="white" fill="' + colors[5] + '" x="1" y="1" width="62" height="22" />' +
+    '<rect stroke="white" fill="' + marker_color + '" x="1" y="1" width="62" height="22" />' +
     '<text x="5" y="18" font-size="12pt" font-family="Arial" font-weight="bold" ' +
     'text-anchor="left" fill="white">' + ind + '</text></svg>';
   var myIcon = new H.map.Icon(svgMarkup),
@@ -72,6 +79,8 @@ map.addEventListener('dragend', function(ev) {
     behavior.enable();
   }
 }, false);
+
+
 
 addClickEventListenerToMap(map);
   </script>
