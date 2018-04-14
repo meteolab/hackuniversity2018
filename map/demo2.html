@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+<link rel="stylesheet" type="text/css" href="https://js.cit.api.here.com/v3/3.0/mapsjs-ui.css" />
+<script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-core.js"></script>
+<script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-service.js"></script>
+<script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-ui.js"></script>
+<script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
+
+</head>
+<body>
+  <div id="map" style="width: 100%; height: 400px; background: grey" />
+  <script  type="text/javascript" charset="UTF-8" >
+
+var platform = new H.service.Platform({
+  app_id: 'pUOQk2ASMdS5JeoK3gYt',
+  app_code: 'BPnxl9GdDtGuzhSDzotEPw',
+  useCIT: true,
+  useHTTPS: true
+});
+var defaultLayers = platform.createDefaultLayers();
+
+var map = new H.Map(document.getElementById('map'),
+  defaultLayers.normal.map,{
+  center: {lat:59.9451, lng:30.3717},
+  zoom: 10
+});
+
+var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+var coords = [{ lat:59.9655, lng:30.3700},
+  { lat: 59.9404, lng: 30.3785 },
+  { lat: 59.9249, lng: 30.3833 },
+  { lat: 59.9288, lng: 30.3467 },
+  { lat:59.9670, lng: 30.3333}];
+
+
+coords.forEach(function (value, index) {
+  var ind = 'Value:' + index;
+  var svgMarkup = '<svg width="64" height="24" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect stroke="white" fill="red" x="1" y="1" width="62" height="22" />' +
+    '<text x="5" y="18" font-size="12pt" font-family="Arial" font-weight="bold" ' +
+    'text-anchor="left" fill="white">' + ind + '</text></svg>';
+  var myIcon = new H.map.Icon(svgMarkup),
+  marker = new H.map.Marker(value,  {icon: myIcon});
+
+
+  marker.draggable = false;
+  map.addObject(marker);
+});
+
+map.addEventListener('dragstart', function(ev) {
+  var target = ev.target;
+  if (target instanceof H.map.Marker) {
+    behavior.disable();
+  }
+}, false);
+
+map.addEventListener('drag', function(ev) {
+  var target = ev.target,
+      pointer = ev.currentPointer;
+  if (target instanceof mapsjs.map.Marker) {
+    target.setPosition(map.screenToGeo(pointer.viewportX, pointer.viewportY));
+  }
+}, false);
+
+map.addEventListener('dragend', function(ev) {
+  var target = ev.target;
+  if (target instanceof mapsjs.map.Marker) {
+    behavior.enable();
+  }
+}, false);
+
+addClickEventListenerToMap(map);
+  </script>
+</body>
+</html>
