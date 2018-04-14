@@ -1,6 +1,8 @@
+#include <OneWire.h>
+#include <DallasTemperature.h>
 #include <SoftwareSerial.h>
 #include <meteonet.h>
-#include "PMS.h"
+#include <PMS.h>
 
 /* Plantower PMS7003 Datasheet
  * https://www.pdf-archive.com/2017/04/12/plantower-pms-7003-sensor-data-sheet/plantower-pms-7003-sensor-data-sheet.pdf
@@ -20,6 +22,12 @@
  *  RX  (7) -> D3 (0)
  *  TX  (9) -> D4 (2)
  *  
+ *  DS18B20 -> ESP8266
+ *  ------------------
+ *  DATA -> D3 (0)
+ *  VCC  -> 3V
+ *  GND  -> GND
+ *
  *  LED
  *  ---
  *  (+) -> D1 (5)
@@ -30,8 +38,8 @@ SoftwareSerial PMS7003(2, 0); // (RX = pin 2, TX = pin 0)
 PMS pms(PMS7003);
 PMS::DATA data;
 int pinLED = 5;
-String Channel = "hack2018";
-Meteonet meteonet(Channel);
+String            Channel = "1234567890";
+Meteonet          meteonet(Channel);
 unsigned long rem;
 unsigned long prev = 0;
 unsigned long period = 30;
@@ -48,11 +56,11 @@ double PM_10_0;
 void setup() {
     Serial.begin(9600);
     PMS7003.begin(9600);
-    pinMode(pinLED, OUTPUT);
     delay(500);
     Serial.println();
-    // meteonet.begin();
+    meteonet.begin();
     delay(500);
+    pinMode(pinLED, OUTPUT);
 }
 
 
