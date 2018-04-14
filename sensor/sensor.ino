@@ -24,7 +24,7 @@
  *  
  *  DS18B20 -> ESP8266
  *  ------------------
- *  DATA -> D3 (0)
+ *  DATA -> D2 (4)
  *  VCC  -> 3V
  *  GND  -> GND
  *
@@ -37,16 +37,20 @@
 SoftwareSerial PMS7003(2, 0); // (RX = pin 2, TX = pin 0)
 PMS pms(PMS7003);
 PMS::DATA data;
+OneWire           oneWire(4);
+DallasTemperature sensors(&oneWire);
 int pinLED = 5;
 String            Channel = "1234567890";
 Meteonet          meteonet(Channel);
 unsigned long rem;
 unsigned long prev = 0;
 unsigned long period = 30;
+double summa_T = 0.0;
 double summa_1_0 = 0.0;
 double summa_2_5 = 0.0;
 double summa_10_0 = 0.0;
 int N = 0;
+double T;
 double PM_1_0;
 double PM_2_5;
 double PM_10_0;
@@ -58,7 +62,7 @@ void setup() {
     PMS7003.begin(9600);
     delay(500);
     Serial.println();
-    meteonet.begin();
+    // meteonet.begin();
     delay(500);
     pinMode(pinLED, OUTPUT);
 }
@@ -78,6 +82,8 @@ void loop() {
         Serial.println(data.PM_AE_UG_10_0);
         Serial.println();
         */
+        sensors.requestTemperatures();
+        summa_T    += sensors.getTempCByIndex(0)+273.15;
         summa_1_0  += data.PM_AE_UG_1_0;
         summa_2_5  += data.PM_AE_UG_2_5;
         summa_10_0 += data.PM_AE_UG_10_0;
@@ -89,6 +95,7 @@ void loop() {
     // Find seconds from last measurement
     rem = meteonet.getTimestamp() % period;
     if(rem < prev && N > 0) {
+        T       = summa_T/N;
         PM_1_0  = summa_1_0/N;
         PM_2_5  = summa_2_5/N;
         PM_10_0 = summa_10_0/N;
@@ -103,11 +110,14 @@ void loop() {
         meteonet.send(PM25);
         //meteonet.loop();
         */
+        Serial.print(T);
+        Serial.print("\t");
         Serial.print(PM_1_0);
         Serial.print("\t");
         Serial.print(PM_2_5);
         Serial.print("\t");
         Serial.println(PM_10_0);
+        summa_T    = 0.0;
         summa_1_0  = 0.0;
         summa_2_5  = 0.0;
         summa_10_0 = 0.0;
