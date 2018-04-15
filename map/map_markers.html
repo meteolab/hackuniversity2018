@@ -8,10 +8,62 @@
 <script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-ui.js"></script>
 <script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
 
+<script type="text/javascript" src="mqttws31.js"></script>
 </head>
 <body>
-  <div id="map" style="width: 100%; height: 400px; background: grey" />
+  <div id="map" style="width: 100%; height: 500px; background: grey" />
   <script  type="text/javascript" charset="UTF-8" >
+
+
+
+  
+mqtt = new Paho.MQTT.Client("meteonet.io", Number(8883), "/", "browser-client");
+mqtt.onConnectionLost = onConnectionLost;
+mqtt.onMessageArrived = onMessageArrived;
+mqtt.connect({onSuccess: function(){mqtt.subscribe("/hack2018");} });
+
+
+function onConnectionLost(responseObject) {
+    if(responseObject.errorCode !== 0) {
+        console.log("onConnectionLost:"+responseObject.errorMessage);
+    }
+}
+
+// Called when a message arrives
+function onMessageArrived(message) {
+    var topic     = message.destinationName;
+    var payload   = message.payloadString;
+    var array     = topic.split('/');
+    var uuid      = array[0];
+    var parameter = array[1];
+    var data      = JSON.parse(payload);
+    var lat       = data.lat;
+    var lon       = data.lon;
+    var value     = Math.round(parseFloat(data.value));
+    //var E  = 610.78*10**(7.63*(T-273.15)/(T-31.25));
+    //var RH = Math.round(e/E*100.0);
+    //var t  = Math.round(T-273.15);
+    //var p  = Math.round(data.airPressure*0.75/100.0);
+    var element   = document.getElementById(parameter);
+    replaceText(element, ""+value+"");
+    var json = localStorage.getItem(uuid);
+    //if(marker[uuid]!=null) {
+    //    mymap.removeLayer(marker[uuid]);
+    //}
+    var markers = L.marker([lat, lon]).addTo(mymap);
+    //markers.bindPopup("<b>"+t+"</b> &#176;C<br /><b>"+p+"</b> РјРј СЂС‚ СЃС‚<br /><b>"+RH+"</b> %<br />");
+    // Delete previous record (without time check!)
+    localStorage.removeItem(topic);
+    // Save record in the Local Storage
+    localStorage.setItem(topic, JSON.stringify(payload));
+    // Read record from the Local Storage
+    console.log("Length: " + localStorage.length);
+    console.log("TOPIC: " + topic);
+    console.log("PAYLOAD:\n" + JSON.parse(localStorage.getItem(topic)));
+
+}
+
+
 
 var platform = new H.service.Platform({
   app_id: 'pUOQk2ASMdS5JeoK3gYt',
@@ -35,10 +87,12 @@ var coords = [{ lat:59.9655, lng:30.3700},
   { lat: 59.9288, lng: 30.3467 },
   { lat:59.9670, lng: 30.3333}];
 
+// Временная ботва, заменяющая поток данных
 var punk = prompt('Уровень загрязнения: ', 33);
 
 coords.forEach(function (value, index) {
   var ind = 'Val:' + punk;
+  // very-dark-red, dark-red, red, orange, yellow, green
   var colors = ["#600000","#a10000","#ff0000","#ff9d00","#efff00","#00ff1e"];
   var marker_color = (punk < 55) ? colors[5] :
     (punk < 155) ? colors[4] :
