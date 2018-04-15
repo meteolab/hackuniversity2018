@@ -10,6 +10,7 @@
     <script type="text/javascript" src="mqttws31.js"></script>
   </head>
   <body>
+    <div><span id="parameter" style="width: 100%; height: 200px; background-color: navy; color: white;"></span></div>
     <div id="map" style="width: 100%; height: 500px; background: grey" />
     <script  type="text/javascript" charset="UTF-8" >
 
